@@ -1,12 +1,4 @@
-FROM alpine as verifybase
-
-ARG HASHICORP_FINGERPRINT=91a6e7f85d05c65630bef18951852d87348ffc4c
-
-ADD https://keybase.io/hashicorp/pgp_keys.asc?fingerprint=${HASHICORP_FINGERPRINT} /tmp/hashicorp.asc
-RUN set -x \
- && apk add --no-cache \
-    gnupg \
- && gpg --import /tmp/hashicorp.asc
+FROM dweomer/hashibase as verify
 
 WORKDIR /tmp
 
@@ -34,7 +26,7 @@ RUN set -x \
  && addgroup -g ${TERRAFORM_GID} terraform \
  && adduser -S -G terraform -u ${TERRAFORM_UID} terraform
 
-COPY --from=verifybase /usr/local/bin/* /usr/local/bin/
+COPY --from=verify /usr/local/bin/* /usr/local/bin/
 
 USER terraform
 ENTRYPOINT ["terraform"]
